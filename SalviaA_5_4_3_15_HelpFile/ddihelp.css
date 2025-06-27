@@ -1,0 +1,142 @@
+﻿body {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 10pt;
+}
+
+p { margin-right: 10%; }
+
+.activeObj {
+    border: 0px black none;
+    vertical-align: middle;
+    cursor: pointer;
+}
+
+.unselected {
+    width: 100%;
+    visibility: hidden;
+    display: none;
+}
+
+.selected {
+    width: 100%;
+    visibility: visible;
+    display: block;
+}
+
+table { font-size: 10pt; }
+
+.tableheader {
+    color: #C60019;
+    font-weight: bold
+}
+
+.tablecell { color: #006699 }
+
+.tableCellBorder {
+    border-color: #666666;
+    border-right-style: solid;
+    border-right-width: 1px;
+}
+
+.hlink { cursor: help }
+
+.CB {
+    border-color: #666666;
+    border-right-style: solid;
+    border-right-width: 1px;
+}
+
+.tableCellNoBorder { }
+
+.tableHeaderCellBorder {
+    background-color: #E2E2E2;
+    border-color: #666666;
+    border-right-style: solid;
+    border-right-width: 1px;
+    color: #666666;
+    font-weight: bold;
+    text-indent: 10px;
+}
+
+.tableHeaderCellNoBorder {
+    background-color: #E2E2E2;
+    color: #666666;
+    font-weight: bold;
+    text-indent: 10pt;
+}
+
+.tableClassicList {
+    border-style: solid solid solid solid;
+    border-width: 2px 2px 2px 2px;
+    border-color: gray gray gray gray;
+    width: 90%
+}
+
+.sortable {
+    border-style: solid solid solid solid;
+    border-width: 2px 2px 2px 2px;
+    border-color: gray gray gray gray;
+}
+
+table.sortable a.sortheader {
+    background-color: #E2E2E2;
+    color: #666666;
+    font-weight: bold;
+    text-decoration: none;
+    display: block;
+}
+
+table.sortable span.sortarrow {
+    color: black;
+    text-decoration: none;
+}
+
+.tableTitle {
+    border-bottom-color: #aaaaaa;
+    border-bottom-style: dashed;
+    border-bottom-width: 1px;
+    width: 90%
+}
+
+.text { margin-right: 10%; }
+
+.legalText {
+    font-size: 9pt;
+    margin-right: 10%;
+}
+
+.titleText {
+    color: #666666;
+    font-size: 12pt;
+    font-weight: bold;
+    text-indent: 5px;
+    margin-right: 10%;
+}
+
+.scroll { overflow: auto }
+
+.backToTopLink {
+    text-align: right;
+    margin-right: 10%;
+}
+
+a { cursor: hand; }
+
+a:visited { color: blue; }
+
+td {
+    text-align: left;
+    vertical-align: middle;
+}
+
+td ul {
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+td p {
+    margin: 0px;
+    padding: 0px;
+}
+
+ul { margin-right: 10%; }

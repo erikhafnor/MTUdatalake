@@ -28,7 +28,6 @@ from variable_mapping import (
     SIGH_BREATH_STATUS_CODES,
     DEVICE_MODEL_CODES,
     BACKUP_MODE_ACTIVE_STATUS_CODES,
-    UNIT_CODE_MAP,
 )
 
 def decode_bitfield(value, bitfield_map):
@@ -79,7 +78,7 @@ def process_hl7_message(lines):
                     device_type = 'Elisa 800'
         if line.startswith('OBX'):
             fields = line.split('|')
-            if str(fields[3]).strip() == "1913":
+            if fields[3] == "1913":
                 device_serial = fields[5]
     # Only process if device is Elisa 800
     if device_type != 'Elisa 800':
@@ -89,12 +88,10 @@ def process_hl7_message(lines):
     for line in lines:
         if line.startswith('OBX'):
             fields = line.split('|')
-            variable_id = str(fields[3]).strip()
+            variable_id = fields[3]
             value = fields[5]
             unit = fields[6] if len(fields) > 6 and fields[6] else VARIABLE_LABELS_UNITS.get(variable_id, {}).get('unit', '')
             label = VARIABLE_LABELS_UNITS.get(variable_id, {}).get('label', variable_id)
-            unit_code = fields[7] if len(fields) > 7 else None  # Adjust index as needed
-            unit_short = UNIT_CODE_MAP.get(str(unit_code), "")
             timestamp = fields[14] if len(fields) > 14 else ''
             # Use the imported mappings for value_description
             if variable_id == "538":
@@ -159,7 +156,6 @@ def process_hl7_message(lines):
                 'value': value,
                 'value_description': value_desc,
                 'unit': unit,
-                'unit_short': unit_short,  # <-- add this
                 'timestamp': timestamp,
                 'bitfield_status': json.dumps(bitfield_status) if bitfield_status else "",
                 'device_serial': device_serial  # <-- always set!
@@ -219,7 +215,6 @@ if __name__ == "__main__":
             "value": row['value'],
             "value_description": row.get('value_description', row['value']),
             "unit": row['unit'],
-            "unit_short": row.get('unit_short', ""),  
             "timestamp_str": row['timestamp'],
         }
         # Prepare all bitfield fields, default to False
