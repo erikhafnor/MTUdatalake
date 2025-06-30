@@ -1,9 +1,0 @@
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-*.log
-*.csv
-*.txt
-.DS_Store
-.env
