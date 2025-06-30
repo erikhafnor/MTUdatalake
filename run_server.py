@@ -22,6 +22,7 @@ def handle_hl7_message(hl7_message):
             "value": row['value'],
             "value_description": row.get('value_description', row['value']),
             "unit": row['unit'],
+            "unit_short": row.get('unit_short', ""),
             "timestamp_str": row['timestamp'],
         }
         # Prepare all bitfield fields, default to False

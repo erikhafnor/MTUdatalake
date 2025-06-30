@@ -93,8 +93,7 @@ def process_hl7_message(lines):
             value = fields[5]
             unit = fields[6] if len(fields) > 6 and fields[6] else VARIABLE_LABELS_UNITS.get(variable_id, {}).get('unit', '')
             label = VARIABLE_LABELS_UNITS.get(variable_id, {}).get('label', variable_id)
-            unit_code = fields[7] if len(fields) > 7 else None  # Adjust index as needed
-            unit_short = UNIT_CODE_MAP.get(str(unit_code), "")
+            unit_short = UNIT_CODE_MAP.get(str(unit), "")
             timestamp = fields[14] if len(fields) > 14 else ''
             # Use the imported mappings for value_description
             if variable_id == "538":
@@ -159,7 +158,7 @@ def process_hl7_message(lines):
                 'value': value,
                 'value_description': value_desc,
                 'unit': unit,
-                'unit_short': unit_short,  # <-- add this
+                'unit_short': unit_short,
                 'timestamp': timestamp,
                 'bitfield_status': json.dumps(bitfield_status) if bitfield_status else "",
                 'device_serial': device_serial  # <-- always set!
