@@ -7,12 +7,13 @@ from parsing import (
     safe_bitfield_key,
     ALL_BITFIELD_KEYS,
 )
+DEBUG = True
 
 def handle_hl7_message(hl7_message):
-    #for troubleshooting, print the raw HL7 message
-    print("=== RAW HL7 MESSAGE RECEIVED ===")
-    print(repr(hl7_message))
-    print("================================")
+    if DEBUG:#for troubleshooting, print the raw HL7 message
+        print("=== RAW HL7 MESSAGE RECEIVED ===")
+        print(repr(hl7_message))
+        print("================================")
 
     data = parse_hl7_string(hl7_message)
     for row in data:
@@ -43,10 +44,11 @@ def handle_hl7_message(hl7_message):
             fields=fields,
             timestamp=ns_timestamp
         )
-    print("=== PARSED DATA ===")
-    print(data)
-    print("===================")
-    print("HL7 message processed and sent to QuestDB.")
+    if DEBUG:  # for troubleshooting, print the parsed data
+        print("=== PARSED DATA ===")
+        print(data)
+        print("===================")
+        print("HL7 message processed and sent to QuestDB.")
 
 if __name__ == "__main__":
     receive_hl7_messages(callback=handle_hl7_message)
