@@ -31,6 +31,8 @@ from variable_mapping import (
     UNIT_CODE_MAP,
 )
 
+DEBUG = True
+
 def decode_bitfield(value, bitfield_map):
     try:
         int_value = int(value)
@@ -187,7 +189,8 @@ def send_to_questdb_ilp(measurement, tags, fields, timestamp=None, host='localho
     if timestamp:
         line += f" {timestamp}"
     line += "\n"
-    print("ILP line:", line)  # Debug print
+    if DEBUG:
+        print("ILP line:", line)  # Debug print
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.connect((host, port))
         s.sendall(line.encode())
@@ -239,4 +242,5 @@ if __name__ == "__main__":
             fields=fields,
             timestamp=ns_timestamp
         )
-    print("Data sent to QuestDB via ILP.")
+    if DEBUG:  # for troubleshooting, print the parsed data
+        print("Data sent to QuestDB via ILP.")
