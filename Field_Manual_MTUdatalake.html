@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Field Manual: Deploying HL7 Data Pipeline on Windows Server (Offline)</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2em; }
+        h1, h2, h3 { color: #2c3e50; }
+        code, pre { background: #f4f4f4; padding: 2px 4px; border-radius: 3px; }
+        ul, ol { margin-bottom: 1em; }
+        .section { margin-bottom: 2em; }
+        .checklist { margin-top: 1em; }
+        .checklist li { list-style: "☐ "; margin-left: 1.5em; }
+    </style>
+</head>
+<body>
+    <h1>Field Manual: Deploying HL7 Data Pipeline on Windows Server (Offline)</h1>
+
+    <div class="section">
+        <h2>1. Preparation (On an Internet-Connected Machine)</h2>
+        <h3>A. Download QuestDB</h3>
+        <ol>
+            <li>Go to <a href="https://questdb.io/download/" target="_blank">https://questdb.io/download/</a></li>
+            <li>Download the <b>Windows ZIP</b> version.</li>
+            <li>Save the ZIP file to a USB stick or other transfer medium.</li>
+        </ol>
+        <h3>B. Download Python Installer</h3>
+        <ol>
+            <li>Go to <a href="https://www.python.org/downloads/windows/" target="_blank">https://www.python.org/downloads/windows/</a></li>
+            <li>Download the latest <b>Python 3.x Windows x64 executable installer</b>.</li>
+            <li>Save the installer to your USB stick.</li>
+        </ol>
+        <h3>C. Prepare Python Dependencies</h3>
+        <ol>
+            <li>On your internet-connected machine, create a folder (e.g., <code>python_wheels</code>).</li>
+            <li>In a terminal, run:<br>
+                <pre>pip download -d python_wheels hl7 python-dotenv</pre>
+                <i>(Add any other packages you use, e.g., pandas, flask, etc.)</i>
+            </li>
+            <li>Copy the <code>python_wheels</code> folder to your USB stick.</li>
+        </ol>
+        <h3>D. Copy Your Project Files</h3>
+        <ul>
+            <li>Copy your entire project folder (including all <code>.py</code> scripts, <code>requirements.txt</code>, etc.) to the USB stick.</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>2. Installation on the Windows Server</h2>
+        <h3>A. Install Python</h3>
+        <ol>
+            <li>Copy the Python installer to the server.</li>
+            <li>Run the installer:
+                <ul>
+                    <li>Select <b>"Add Python to PATH"</b>.</li>
+                    <li>Choose <b>"Install for all users"</b>.</li>
+                </ul>
+            </li>
+        </ol>
+        <h3>B. Install Python Dependencies Offline</h3>
+        <ol>
+            <li>Copy the <code>python_wheels</code> folder to the server (e.g., <code>C:\python_wheels</code>).</li>
+            <li>Open <b>Command Prompt</b> as Administrator.</li>
+            <li>Install dependencies:<br>
+                <pre>pip install --no-index --find-links=C:\python_wheels hl7 python-dotenv</pre>
+                <i>(Add any other packages as needed.)</i>
+            </li>
+        </ol>
+        <h3>C. Install QuestDB</h3>
+        <ol>
+            <li>Unzip the QuestDB ZIP file to a directory, e.g., <code>C:\questdb</code>.</li>
+            <li>To start QuestDB, run:<br>
+                <pre>
+cd C:\questdb
+questdb.exe
+                </pre>
+                <i>(This will start QuestDB on port 9000 by default.)</i>
+            </li>
+        </ol>
+    </div>
+
+    <div class="section">
+        <h2>3. Deploy Your Python Project</h2>
+        <ol>
+            <li>Copy your project folder to the server, e.g., <code>C:\hl7_project</code>.</li>
+            <li>Ensure your configuration files (if any) are set for the server environment.</li>
+        </ol>
+    </div>
+
+    <div class="section">
+        <h2>4. Set Up as a Windows Service</h2>
+        <h3>A. Install NSSM (Non-Sucking Service Manager)</h3>
+        <ol>
+            <li>Download NSSM from <a href="https://nssm.cc/download" target="_blank">https://nssm.cc/download</a> on an internet machine.</li>
+            <li>Copy the NSSM executable to the server (e.g., <code>C:\nssm\nssm.exe</code>).</li>
+        </ol>
+        <h3>B. Create a Service for QuestDB</h3>
+        <ol>
+            <li>Open Command Prompt as Administrator.</li>
+            <li>Run:<br>
+                <pre>C:\nssm\nssm.exe install QuestDB</pre>
+            </li>
+            <li>In the dialog:
+                <ul>
+                    <li><b>Path:</b> <code>C:\questdb\questdb.exe</code></li>
+                    <li><b>Startup directory:</b> <code>C:\questdb</code></li>
+                    <li>Click <b>Install service</b>.</li>
+                </ul>
+            </li>
+        </ol>
+        <h3>C. Create a Service for Your Python Script</h3>
+        <ol>
+            <li>Run:<br>
+                <pre>C:\nssm\nssm.exe install HL7Parser</pre>
+            </li>
+            <li>In the dialog:
+                <ul>
+                    <li><b>Path:</b> <code>C:\Python3x\python.exe</code> (replace with your Python path, e.g., <code>C:\Python311\python.exe</code>)</li>
+                    <li><b>Arguments:</b> <code>C:\hl7_project\run_server.py</code></li>
+                    <li><b>Startup directory:</b> <code>C:\hl7_project</code></li>
+                    <li>Click <b>Install service</b>.</li>
+                </ul>
+            </li>
+        </ol>
+        <h3>D. Start the Services</h3>
+        <pre>
+nssm start QuestDB
+nssm start HL7Parser
+        </pre>
+    </div>
+
+    <div class="section">
+        <h2>5. Verification</h2>
+        <ul>
+            <li>Open a browser on the server and go to <a href="http://localhost:9000">http://localhost:9000</a> to check QuestDB.</li>
+            <li>Check Windows Services (<code>services.msc</code>) to ensure both services are running.</li>
+            <li>Check your script’s logs/output for successful HL7 message processing.</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>6. Maintenance</h2>
+        <ul>
+            <li>To stop a service:<br>
+                <code>nssm stop HL7Parser</code>
+            </li>
+            <li>To restart:<br>
+                <code>nssm restart HL7Parser</code>
+            </li>
+            <li>To update your Python code, stop the service, replace files, and restart.</li>
+        </ul>
+    </div>
+
+    <div class="section checklist">
+        <h2>Summary Checklist</h2>
+        <ul>
+            <li>Download QuestDB ZIP, Python installer, NSSM, and Python wheels on an internet machine.</li>
+            <li>Transfer all files to the server.</li>
+            <li>Install Python and dependencies offline.</li>
+            <li>Unzip and configure QuestDB.</li>
+            <li>Set up both QuestDB and your script as Windows services using NSSM.</li>
+            <li>Start and verify services.</li>
+        </ul>
+    </div>
+
+    <p>
+        <b>You are now ready to run your HL7-to-QuestDB pipeline on an offline Windows Server!</b>
