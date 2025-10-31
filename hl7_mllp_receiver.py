@@ -33,7 +33,7 @@ def send_ack(conn, ack_message):
     ack_bytes = MLLP_START + ack_message.encode('utf-8') + MLLP_END
     conn.sendall(ack_bytes)
 
-def receive_hl7_messages(host='0.0.0.0', port=2575, callback=None):
+def receive_hl7_messages(host='0.0.0.0', port=2554, callback=None):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.bind((host, port))
         s.listen(1)

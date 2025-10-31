@@ -33,6 +33,10 @@ from variable_mapping import (
 
 DEBUG = True
 
+# Remember the most recent device serial observed so that subsequent
+# messages without an explicit OBX 1913 value can still be tagged.
+LAST_DEVICE_SERIAL = None
+
 def decode_bitfield(value, bitfield_map):
     try:
         int_value = int(value)
@@ -70,9 +74,10 @@ def parse_hl7_file(filepath):
     return parsed_data
 
 def process_hl7_message(lines):
+    global LAST_DEVICE_SERIAL
     # First, find device type and serial number
     device_type = None
-    device_serial = None
+    device_serial = LAST_DEVICE_SERIAL
     for line in lines:
         if line.startswith('OBR'):
             fields = line.split('|')
@@ -81,8 +86,15 @@ def process_hl7_message(lines):
                     device_type = 'Elisa 800'
         if line.startswith('OBX'):
             fields = line.split('|')
-            if str(fields[3]).strip() == "1913":
-                device_serial = fields[5]
+            if len(fields) > 5:
+                field_id = str(fields[3]).strip()
+                field_id_root = field_id.split('^', 1)[0]
+                if field_id_root == "1913" and fields[5]:
+                    candidate_serial = fields[5].split('^', 1)[0].strip()
+                    if candidate_serial:
+                        device_serial = candidate_serial
+    if device_serial:
+        LAST_DEVICE_SERIAL = device_serial
     # Only process if device is Elisa 800
     if device_type != 'Elisa 800':
         return []
@@ -91,7 +103,8 @@ def process_hl7_message(lines):
     for line in lines:
         if line.startswith('OBX'):
             fields = line.split('|')
-            variable_id = str(fields[3]).strip()
+            variable_id_full = str(fields[3]).strip()
+            variable_id = variable_id_full.split('^', 1)[0]
             value = fields[5]
             unit = fields[6] if len(fields) > 6 and fields[6] else VARIABLE_LABELS_UNITS.get(variable_id, {}).get('unit', '')
             label = VARIABLE_LABELS_UNITS.get(variable_id, {}).get('label', variable_id)
